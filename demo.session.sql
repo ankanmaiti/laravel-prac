@@ -16,3 +16,16 @@ FROM users;
 
 SELECT *
 FROM employers;
+
+INSERT INTO tags (name)
+VALUES
+('programming'),
+('doctor')
+;
+
+PRAGMA foreign_keys = ON;
+
+INSERT INTO job_tag (job_listing_id, tag_id)
+VALUES
+(1, 2)
+;
