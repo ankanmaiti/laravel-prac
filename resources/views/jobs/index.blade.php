@@ -1,7 +1,13 @@
 <x-layout>
-    <x-slot:heading>Jobs</x-slot:heading>
+    <x-slot:header>
+        <div class="flex justify-between items-center">
+            <x-heading>Jobs</x-heading>
+            <x-button href="/jobs/create">+</x-button>
+        </div>
+    </x-slot:header>
 
-    <ul class="space-y-1">
+
+    <ul class="space-y-1 my-4">
         @foreach ($jobs as $job)
             <li>
                 <a href="/jobs/{{ $job['id'] }}"
@@ -13,7 +19,7 @@
         @endforeach
     </ul>
 
-    <div class="my-4">
+    <div>
         {{ $jobs->links() }}
     </div>
 </x-layout>
