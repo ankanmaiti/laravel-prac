@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\View\View;
 
 class JobController extends Controller
 {
 
-    public function index()
+    public function index(): View
     {
         $jobs = Job::with('employer')->latest()->simplePaginate(5);
 
@@ -21,19 +22,19 @@ class JobController extends Controller
         );
     }
 
-    public function show(Job $job)
+    public function show(Job $job): View
     {
         return view('jobs.show', [
             'job' => $job
         ]);
     }
 
-    public function create()
+    public function create(): View
     {
         return view('jobs.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         // auto redirect with errors if not validated
         $request->validate([
@@ -51,12 +52,12 @@ class JobController extends Controller
         return redirect('/jobs');
     }
 
-    public function edit(Job $job)
+    public function edit(Job $job): View
     {
         return view('jobs.edit', ['job' => $job]);
     }
 
-    public function update(Request $request, Job $job)
+    public function update(Request $request, Job $job): RedirectResponse
     {
         // validate
         $request->validate([
@@ -76,7 +77,7 @@ class JobController extends Controller
         return redirect('/jobs/' . $job->id );
     }
 
-    public function destroy(Job $job)
+    public function destroy(Job $job): RedirectResponse
     {
         // authorize
 
