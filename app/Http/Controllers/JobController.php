@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\JobPosted;
 use App\Models\Job;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class JobController extends Controller
@@ -36,55 +39,47 @@ class JobController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // auto redirect with errors if not validated
         $request->validate([
             'title' => ['required', 'min:5'],
             'salary' => ['required']
         ]);
 
-        // db entry
-        Job::create([
+        $job = Job::create([
             'title' => $request->title,
             'salary' => $request->salary,
-            'employer_id' => 1
+            'employer_id' => Auth::user()->id
         ]);
+
+        Mail::to($job->employer->user)
+            ->send(new JobPosted($job));
 
         return redirect('/jobs');
     }
 
-    public function edit(Job $job): View
+    public function edit(Job $job): View | RedirectResponse
     {
         return view('jobs.edit', ['job' => $job]);
     }
 
     public function update(Request $request, Job $job): RedirectResponse
     {
-        // validate
         $request->validate([
             'title' => ['required', 'min:5'],
             'salary' => ['required']
         ]);
 
-        // authorized
-
-        // update and persist
         $job->update([
             'title' => $request->title,
             'salary' => $request->salary
         ]);
 
-        // redirect
-        return redirect('/jobs/' . $job->id );
+        return redirect('/jobs/' . $job->id);
     }
 
     public function destroy(Job $job): RedirectResponse
     {
-        // authorize
-
-        // delete
         $job->delete();
 
-        // redirect
         return redirect('/jobs');
     }
 }
