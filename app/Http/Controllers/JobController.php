@@ -39,19 +39,18 @@ class JobController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $attributes = $request->validate([
             'title' => ['required', 'min:5'],
             'salary' => ['required']
         ]);
 
         $job = Job::create([
-            'title' => $request->title,
-            'salary' => $request->salary,
+            ...$attributes,
             'employer_id' => Auth::user()->id
         ]);
 
         Mail::to($job->employer->user)
-            ->send(new JobPosted($job));
+            ->queue(new JobPosted($job));
 
         return redirect('/jobs');
     }
@@ -63,15 +62,12 @@ class JobController extends Controller
 
     public function update(Request $request, Job $job): RedirectResponse
     {
-        $request->validate([
+        $attributes = $request->validate([
             'title' => ['required', 'min:5'],
             'salary' => ['required']
         ]);
 
-        $job->update([
-            'title' => $request->title,
-            'salary' => $request->salary
-        ]);
+        $job->update($attributes);
 
         return redirect('/jobs/' . $job->id);
     }
